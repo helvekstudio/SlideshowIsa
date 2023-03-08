@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GIF erstellen2</title>
+    <style>
+      #animated-gif {
+        width: 500px;
+        height: 500px;
+        background-image: url("Spanndorn_SLIDE_1.webp");
+        background-size: cover;
+        transition: background-image 0.5s all;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="animated-gif"></div>
+
+    <script>
+      function preloadImages() {
+        var images = [];
+        for (var i = 1; i <= 25; i++) {
+          var img = new Image();
+          img.src = "Spanndorn_SLIDE_" + i + ".webp";
+          images.push(img);
+        }
+      }
+      preloadImages();
+      var intervalId;
+      var isAnimating = false;
+      var currentImageIndex = 1; // Globale Variable
+
+      function startAnimation(startIndex) {
+        if (isAnimating) {
+          return;
+        }
+        isAnimating = true;
+
+        var totalImages = 25;
+
+        intervalId = setInterval(function() {
+          if (startIndex && currentImageIndex < startIndex) {
+            currentImageIndex++;
+          } else if (!startIndex && currentImageIndex < totalImages) {
+            currentImageIndex++;
+          } else {
+            clearInterval(intervalId);
+            isAnimating = false;
+          }
+          var imageUrl = "Spanndorn_SLIDE_" + currentImageIndex + ".webp";
+          document.getElementById("animated-gif").style.backgroundImage = "url('" + imageUrl + "')";
+        }, 30);
+
+        document.getElementById("animated-gif").addEventListener("mouseout", function() {
+          clearInterval(intervalId);
+          isAnimating = false;
+          reverseAnimation(currentImageIndex, totalImages);
+        });
+      }
+
+      function reverseAnimation(startIndex, totalImages) {
+        if (isAnimating) {
+          return;
+        }
+        isAnimating = true;
+
+        currentImageIndex = startIndex; // Aktualisiere die Variable
+
+        intervalId = setInterval(function() {
+          if (currentImageIndex > 1) {
+            currentImageIndex--;
+          } else {
+            clearInterval(intervalId);
+            isAnimating = false;
+            var imageUrl = "Spanndorn_SLIDE_1.webp";
+            document.getElementById("animated-gif").style.backgroundImage = "url('" + imageUrl + "')";
+            document.getElementById("animated-gif").addEventListener("mouseover", function() {
+              startAnimation(null);
+            });
+          }
+          var imageUrl = "Spanndorn_SLIDE_" + currentImageIndex + ".webp";
+          document.getElementById("animated-gif").style.backgroundImage = "url('" + imageUrl + "')";
+        }, 30);
+      }
+
+      document.getElementById("animated-gif").addEventListener("mouseover", function() {
+        startAnimation(null);
+      });
+      document.getElementById("animated-gif").addEventListener("mouseout", function() {
+        clearInterval(intervalId);
+        isAnimating = false;
+        reverseAnimation(currentImageIndex, 25); // Verwende die globale Variable
+        document.getElementById("animated-gif").removeEventListener("mouseover", startAnimation);
+      });
+    </script>
+  </body>
+</html>
