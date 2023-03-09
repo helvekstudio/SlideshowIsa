@@ -6,14 +6,11 @@
       #animated-gif {
         width: 500px;
         height: 500px;
-        background-image: url("Spanndorn_SLIDE_1.jpg");
-        background-size: cover;
-        transition: background-image 0.5s all;
       }
     </style>
   </head>
   <body>
-    <div id="animated-gif"></div>
+    <img id="animated-gif" src="Spanndorn_SLIDE_1.jpg" width="500" height="500">
 
     <script>
       function preloadImages() {
@@ -27,8 +24,9 @@
       
       var intervalId;
       var isAnimating = false;
-      var currentImageIndex = 1; // Globale Variable
+      var currentImageIndex = 1; // Global variable
       var startIndex;
+      var img = document.getElementById("animated-gif");
       
       function startAnimation(startIndex) {
         if (isAnimating) {
@@ -50,10 +48,10 @@
             isAnimating = false;
           }
           var imageUrl = "Spanndorn_SLIDE_" + currentImageIndex + ".jpg";
-          document.getElementById("animated-gif").style.backgroundImage = "url('" + imageUrl + "')";
+          img.src = imageUrl;
         }, 40);
 
-        document.getElementById("animated-gif").addEventListener("mouseout", function() {
+        img.addEventListener("mouseout", function() {
           clearInterval(intervalId);
           isAnimating = false;
           if (startIndex) {
@@ -70,7 +68,12 @@
         }
         isAnimating = true;
 
-        currentImageIndex = startIndex; // Aktualisiere die Variable
+        currentImageIndex = startIndex; // Update the variable
+
+        // Additional check to ensure endIndex is not greater than startIndex
+        if (endIndex && endIndex > startIndex) {
+          endIndex = startIndex;
+        }
 
         intervalId = setInterval(function() {
           if (currentImageIndex > endIndex) {
@@ -80,8 +83,8 @@
             isAnimating = false;
             if (endIndex === 1) {
               var imageUrl = "Spanndorn_SLIDE_1.jpg";
-              document.getElementById("animated-gif").style.backgroundImage = "url('" + imageUrl + "')";
-              document.getElementById("animated-gif").addEventListener("mouseover", function() {
+              img.src = imageUrl;
+              img.addEventListener("mouseover", function() {
                 startAnimation(null);
               });
             } else {
@@ -89,21 +92,29 @@
             }
           }
           var imageUrl = "Spanndorn_SLIDE_" + currentImageIndex + ".jpg";
-          document.getElementById("animated-gif").style.backgroundImage = "url('" + imageUrl + "')";
+          img.src = imageUrl;
         }, 40);
       }
-
-      document.getElementById("animated-gif").addEventListener("mouseover", function() {
+      img.addEventListener("mouseover", function() {
+        //console.log("isAnimating: " + isAnimating);
+        //console.log("startIndex: " + startIndex);
         if (!isAnimating) {
           startIndex = null;
           startAnimation(null);
         } else if (startIndex) {
-          startAnimation(startIndex);
+          clearInterval(intervalId);
+          isAnimating = false;
           startIndex = null;
+          startAnimation(startIndex);
+        } else {
+          clearInterval(intervalId);
+          isAnimating = false;
+          startAnimation(null);
         }
       });
 
-      document.getElementById("animated-gif").addEventListener("mouseout", function() {
+      img.addEventListener("mouseout", function() {
+       // console.log("isAnimating: " + isAnimating);
         if (isAnimating) {
           startIndex = currentImageIndex;
         }
